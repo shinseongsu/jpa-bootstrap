@@ -1,0 +1,100 @@
+package persistence.sql.entity.loader;
+
+import domain.LazyOrder;
+import domain.Order;
+import domain.OrderItem;
+import domain.Person;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import persistence.sql.db.H2Database;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+class EntityLoaderImplTest extends H2Database {
+
+    private Person person1;
+    private Person person2;
+
+    private Order insertOrder;
+    private OrderItem jpaOrderItem;
+    private LazyOrder lazyOrder;
+
+
+    @BeforeEach
+    void setUp() {
+        this.person1 = new Person(1L, "박재성", 10, "jason");
+        this.person2 = new Person(2L, "이동규", 20, "cu");
+
+        this.jpaOrderItem = new OrderItem(1L, "만들면서 배우는 JPA", 1);
+        this.insertOrder = new Order(1L, "nextstep jpa 강의", List.of(jpaOrderItem));
+        this.lazyOrder = new LazyOrder(1L, "만드면서 배우는 Spring", List.of(jpaOrderItem));
+
+        entityPersister.deleteAll(Order.class);
+        entityPersister.deleteAll(LazyOrder.class);
+        entityPersister.deleteAll(OrderItem.class);
+        entityPersister.insert(jpaOrderItem);
+        entityPersister.insert(insertOrder);
+        entityPersister.insert(lazyOrder);
+
+        entityPersister.deleteAll(Person.class);
+        entityPersister.insert(person1);
+        entityPersister.insert(person2);
+    }
+
+    @DisplayName("아이디가 있는 값을 조회후, 엔티티로 반환한다.")
+    @Test
+    void findByIdTest() {
+        Person person = entityLoader.find(Person.class, person1.getId());
+
+        assertThat(person).isEqualTo(person1);
+    }
+
+    @DisplayName("아이디값이 없을 시, 널로 반환한다.")
+    @Test
+    void isNotExistsFindById() {
+        Person person = entityLoader.find(Person.class, 3);
+
+        assertThat(person).isNull();
+    }
+
+    @DisplayName("엔티티에 매핑된 테이블 값을 모두 조회한다.")
+    @Test
+    void findAllTest() {
+        List<Person> persons = entityLoader.findAll(Person.class);
+
+        assertThat(persons).containsExactly(person1, person2);
+    }
+
+    @DisplayName("주문에서 연관된 데이터를 같이 조회한다.")
+    @Test
+    void eagerFind() {
+        Order order = entityLoader.find(Order.class, 1);
+
+        assertThat(order).isEqualTo(insertOrder);
+    }
+
+    @DisplayName("주문테이블에서 필요한 값이 있을떄 조회를 한다.")
+    @Test
+    void lazyLoadingTest() throws Exception{
+        final OutputStream out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+
+        LazyOrder order = entityLoader.find(LazyOrder.class, lazyOrder.getId());
+
+        assertAll(
+            () -> assertThat(order.getId()).isEqualTo(lazyOrder.getId()),
+            () -> assertThat(order.getOrderNumber()).isEqualTo(lazyOrder.getOrderNumber())
+        );
+
+        assertThat(order).isEqualTo(lazyOrder);
+        assertThat(out.toString()).isEqualTo("Lazy loading 발생" + System.lineSeparator());
+    }
+
+}
