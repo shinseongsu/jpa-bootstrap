@@ -24,9 +24,9 @@ public class LazyLoadingManager {
 
     public <T> T setLazyLoading(final T entity) {
         final EntityMappingTable entityMappingTable = EntityMappingTable.of(entity.getClass(), entity);
-        List<DomainType> fetchTypeDomainType = entityMappingTable.getDomainTypeWithLazyLoading();
+        List<DomainType> lazyLoadingDomainTypes = entityMappingTable.getDomainTypeWithLazyLoading();
 
-        fetchTypeDomainType
+        lazyLoadingDomainTypes
                 .forEach(domainType -> {
                     Class<?> subEntityType = getCollectionClass(domainType.getField());
                     Object lazyProxy = Enhancer.create(
