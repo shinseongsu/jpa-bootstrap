@@ -9,9 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import persistence.sql.db.H2Database;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,7 +79,7 @@ class EntityLoaderImplTest extends H2Database {
 
     @DisplayName("LazyLoading이 동작을 하는지 테스트한다.")
     @Test
-    void lazyLoadingTest() throws Exception{
+    void lazyLoadingTest() throws Exception {
         LazyOrder order = entityLoader.find(LazyOrder.class, lazyOrder.getId());
 
         assertAll(
