@@ -24,7 +24,7 @@ public class LazyLoadingManager {
 
     public <T> T setLazyLoading(final T entity) {
         final EntityMappingTable entityMappingTable = EntityMappingTable.of(entity.getClass(), entity);
-        List<DomainType> fetchTypeDomainType = entityMappingTable.getFetchType();
+        List<DomainType> fetchTypeDomainType = entityMappingTable.getDomainTypeWithLazyLoading();
 
         fetchTypeDomainType
                 .forEach(domainType -> {
