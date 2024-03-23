@@ -16,9 +16,15 @@ public class WhereClause {
     public String toSql() {
         String sql = criteria.toSql();
 
-        return EMPTY.getValue().equals(sql) ?
-                EMPTY.getValue() :
-                String.format(WHERE.getFormat(), criteria.toSql());
+        if(isEmptySql(sql)) {
+            return EMPTY.getValue();
+        }
+
+        return String.format(WHERE.getFormat(), criteria.toSql());
+    }
+
+    private boolean isEmptySql(final String sql) {
+        return EMPTY.getValue().equals(sql);
     }
 
 }
