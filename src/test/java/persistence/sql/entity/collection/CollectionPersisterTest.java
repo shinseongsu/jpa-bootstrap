@@ -13,9 +13,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CollectionPersisterTest extends H2Database {
 
     private LazyOrder lazyOrder;
+    private CollectionPersister collectionPersister;
 
     @BeforeEach
     void setUp() {
+        this.collectionPersister = new CollectionPersisterImpl();
         this.lazyOrder = new LazyOrder(1L, "jpa 만들기", List.of());
     }
 

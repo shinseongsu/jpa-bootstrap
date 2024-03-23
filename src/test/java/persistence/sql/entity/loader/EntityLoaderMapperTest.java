@@ -8,6 +8,7 @@ import persistence.repository.Repository;
 import persistence.repository.RepositoryImpl;
 import persistence.sql.db.H2Database;
 import persistence.sql.dml.conditional.Criteria;
+import persistence.sql.dml.query.builder.SelectQueryBuilder;
 import persistence.sql.dml.query.clause.ColumnClause;
 import persistence.sql.dml.query.clause.WhereClause;
 import persistence.sql.entity.EntityMappingTable;
@@ -24,13 +25,18 @@ class EntityLoaderMapperTest extends H2Database {
 
     private Person person1;
 
+    private SelectQueryBuilder selectQueryBuilder;
+    private EntityLoaderMapper entityLoaderMapper;
+
     @BeforeEach
     void setUp() throws SQLException {
         Repository<Person, Long> personRepository = new RepositoryImpl<>(entityManager, Person.class);
 
         this.person1 = new Person(1L, "박재성", 10, "jason");
-
         this.connection = server.getConnection();
+
+        this.selectQueryBuilder = inFlightMetadataCollector.getQueryMeta().getSelectQueryBuilder();
+        this.entityLoaderMapper = EntityLoaderMapper.getInstance();;
 
         personRepository.deleteAll();
         personRepository.save(person1);

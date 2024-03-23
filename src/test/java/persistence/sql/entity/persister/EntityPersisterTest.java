@@ -4,7 +4,9 @@ import domain.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import persistence.metadata.MetaModel;
 import persistence.sql.db.H2Database;
+import persistence.sql.entity.loader.EntityLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,15 +14,22 @@ class EntityPersisterTest extends H2Database {
 
     private Person person;
     private Person person2;
+    private EntityPersister entityPersister;
+    private EntityLoader entityLoader;
 
 
     @BeforeEach
     void setUp() {
+        MetaModel metaModel = inFlightMetadataCollector.getMetaModel();
+
         this.person = new Person(1L, "박재성", 10, "jason");
         this.person2 = new Person(2L, "이동규", 20, "cu");
 
+        this.entityPersister = metaModel.getEntityPersister(Person.class);
+        this.entityLoader = metaModel.getEntityLoader(Person.class);
+
         entityManager.removeAll(Person.class);
-        entityPersister.insert(person);
+        entityManager.persist(person);
     }
 
     @DisplayName("데이터가 수정이 잘되는지 확인한다.")
@@ -30,7 +39,7 @@ class EntityPersisterTest extends H2Database {
 
         entityPersister.update(newPerson);
 
-        final Person result = entityManager.find(Person.class, person.getId());
+        final Person result = entityLoader.find(Person.class, person.getId());
 
         assertThat(newPerson).isEqualTo(result);
     }
@@ -40,7 +49,7 @@ class EntityPersisterTest extends H2Database {
     void insertTest() {
         entityPersister.insert(person2);
 
-        final Person result = entityManager.find(Person.class, person2.getId());
+        final Person result = entityLoader.find(Person.class, person2.getId());
 
         assertThat(person2).isEqualTo(result);
     }
@@ -60,7 +69,7 @@ class EntityPersisterTest extends H2Database {
     void deleteTest() {
         entityPersister.delete(person);
 
-        final Person result = entityManager.find(Person.class, person.getId());
+        final Person result = entityLoader.find(Person.class, person.getId());
 
         assertThat(result).isNull();
     }
