@@ -94,7 +94,7 @@ public class EntityMappingTable {
                 .anyMatch(domainType -> domainType.getFetchType() == fetchType);
     }
 
-    public List<DomainType> getFetchType() {
+    public List<DomainType> getDomainTypeWithLazyLoading() {
         return domainTypes.getDomainTypes()
                 .stream()
                 .filter(domainType -> domainType.getFetchType() == FetchType.LAZY)
