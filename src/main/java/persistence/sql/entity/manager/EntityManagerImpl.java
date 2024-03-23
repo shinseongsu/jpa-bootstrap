@@ -1,15 +1,17 @@
 package persistence.sql.entity.manager;
 
 import jakarta.persistence.Id;
+import persistence.metadata.MetaModel;
 import persistence.sql.dml.exception.FieldSetValueException;
 import persistence.sql.entity.EntityMappingTable;
+import persistence.sql.entity.collection.CollectionPersister;
+import persistence.sql.entity.collection.CollectionPersisterImpl;
+import persistence.sql.entity.collection.LazyLoadingManager;
 import persistence.sql.entity.context.PersistenceContext;
 import persistence.sql.entity.context.PersistenceContextImpl;
 import persistence.sql.entity.exception.ReadOnlyException;
 import persistence.sql.entity.exception.RemoveEntityException;
-import persistence.sql.entity.loader.EntityLoader;
 import persistence.sql.entity.model.DomainType;
-import persistence.sql.entity.persister.EntityPersister;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -17,21 +19,21 @@ import java.util.List;
 
 public class EntityManagerImpl implements EntityManager {
 
-    private final EntityLoader entityLoader;
-    private final EntityPersister entityPersister;
+    private final MetaModel metaModel;
     private final PersistenceContext persistenceContext;
+    private final LazyLoadingManager lazyLoadingManager;
+    private final CollectionPersister collectionPersister;
 
-
-    public EntityManagerImpl(final EntityLoader entityLoader,
-                             final EntityPersister entityPersister) {
-        this.entityLoader = entityLoader;
-        this.entityPersister = entityPersister;
+    public EntityManagerImpl(final MetaModel metaModel) {
+        this.metaModel = metaModel;
+        this.collectionPersister = new CollectionPersisterImpl();
         this.persistenceContext = new PersistenceContextImpl();
+        this.lazyLoadingManager = new LazyLoadingManager();
     }
 
     @Override
     public <T> List<T> findAll(final Class<T> clazz) {
-        return entityLoader.findAll(clazz);
+        return metaModel.getEntityLoader(clazz).findAll(clazz);
     }
 
     @Override
@@ -46,7 +48,11 @@ public class EntityManagerImpl implements EntityManager {
             return persistenceEntity;
         }
 
-        T entity = entityLoader.find(clazz, id);
+        T entity = metaModel.getEntityLoader(clazz).find(clazz, id);
+        if(lazyLoadingManager.isLazyLoading(clazz)) {
+            entity = lazyLoadingManager.setLazyLoading(entity, collectionPersister, metaModel.getCollectionLoader(clazz));
+        }
+
         if(entity != null) {
             insertEntityLoader(entity, id);
             persistenceContext.loading(entity, id);
@@ -62,7 +68,11 @@ public class EntityManagerImpl implements EntityManager {
             return persistenceEntity;
         }
 
-        T entity = entityLoader.find(clazz, id);
+        T entity = metaModel.getEntityLoader(clazz).find(clazz, id);
+        if(lazyLoadingManager.isLazyLoading(clazz)) {
+            entity = lazyLoadingManager.setLazyLoading(entity, collectionPersister, metaModel.getCollectionLoader(clazz));
+        }
+
         if(entity != null) {
             insertEntityLoader(entity, id);
             persistenceContext.readOnly(entity, id);
@@ -93,13 +103,13 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     private void insertEntity(final Object entity) {
-        Object newKey = entityPersister.insertWithPk(entity);
+        Object newKey = metaModel.getEntityPersister(entity.getClass()).insertWithPk(entity);
         newInstance(entity, newKey);
         insertEntityLoader(entity, newKey);
     }
 
     private void updateEntity(final Object entity, final Object key) {
-        entityPersister.update(entity);
+        metaModel.getEntityPersister(entity.getClass()).update(entity);
         insertEntityLoader(entity, key);
     }
 
@@ -131,13 +141,13 @@ public class EntityManagerImpl implements EntityManager {
         }
 
         persistenceContext.removeEntity(entity);
-        entityPersister.delete(entity);
+        metaModel.getEntityPersister(entity.getClass()).delete(entity);
         persistenceContext.goneEntity(entity);
     }
 
     @Override
     public void removeAll(final Class<?> clazz) {
-        entityPersister.deleteAll(clazz);
+        metaModel.getEntityPersister(clazz).deleteAll(clazz);
         persistenceContext.removeAll();
     }
 }
