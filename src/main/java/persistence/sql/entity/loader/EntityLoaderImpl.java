@@ -58,7 +58,7 @@ public class EntityLoaderImpl implements EntityLoader {
         final WhereClause whereClause = new WhereClause(criteria);
 
         if (entityMappingTable.hasFetchType(FetchType.EAGER)) {
-            return eagerTypeSql(entityMappingTable, primaryDomainType, id, clazz);
+            return getEagerTypeSql(entityMappingTable, primaryDomainType, id, clazz);
         }
 
         final String sql = selectQueryBuilder.toSql(
@@ -78,10 +78,10 @@ public class EntityLoaderImpl implements EntityLoader {
         return lazyLoadingManager.setLazyLoading(entity);
     }
 
-    private <T> T eagerTypeSql(final EntityMappingTable entityMappingTable,
-                               final PrimaryDomainType primaryDomainType,
-                               final Object id,
-                               final Class<T> clazz) {
+    private <T> T getEagerTypeSql(final EntityMappingTable entityMappingTable,
+                                  final PrimaryDomainType primaryDomainType,
+                                  final Object id,
+                                  final Class<T> clazz) {
         Criterion criterion = Criterion.of(primaryDomainType.getAlias(entityMappingTable.getTable().getAlias()), id.toString());
         Criteria criteria = Criteria.ofCriteria(Collections.singletonList(criterion));
         final WhereClause whereClause = new WhereClause(criteria);
