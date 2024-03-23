@@ -80,12 +80,9 @@ class EntityLoaderImplTest extends H2Database {
         assertThat(order).isEqualTo(insertOrder);
     }
 
-    @DisplayName("주문테이블에서 필요한 값이 있을떄 조회를 한다.")
+    @DisplayName("LazyLoading이 동작을 하는지 테스트한다.")
     @Test
     void lazyLoadingTest() throws Exception{
-        final OutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-
         LazyOrder order = entityLoader.find(LazyOrder.class, lazyOrder.getId());
 
         assertAll(
@@ -94,7 +91,7 @@ class EntityLoaderImplTest extends H2Database {
         );
 
         assertThat(order).isEqualTo(lazyOrder);
-        assertThat(out.toString()).isEqualTo("Lazy loading 발생" + System.lineSeparator());
+        assertThat(order.getOrderItems()).containsExactly(jpaOrderItem);
     }
 
 }
