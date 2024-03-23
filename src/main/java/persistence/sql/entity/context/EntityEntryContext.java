@@ -15,11 +15,15 @@ public class EntityEntryContext {
         return entities.stream()
                 .filter(entityEntry -> entityEntry.isEquals(entity))
                 .findFirst()
-                .orElse(null);
+                .orElseGet(() -> null);
     }
 
     public void delete(final Object entity) {
-        getEntityEntry(entity).deleted();
+        EntityEntry entityEntry = getEntityEntry(entity);
+
+        if(entityEntry != null) {
+            entityEntry.deleted();
+        }
     }
 
     public void managed(final Object entity) {
@@ -27,7 +31,10 @@ public class EntityEntryContext {
     }
 
     public void gone(final Object entity) {
-        getEntityEntry(entity).gone();
+        EntityEntry entityEntry = getEntityEntry(entity);
+        if(entityEntry != null) {
+            entityEntry.gone();
+        }
     }
 
     public void saving(final Object entity) {
