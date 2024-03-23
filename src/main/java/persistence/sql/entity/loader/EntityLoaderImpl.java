@@ -67,11 +67,15 @@ public class EntityLoaderImpl implements EntityLoader {
                 whereClause);
 
         if (entityMappingTable.hasFetchType(FetchType.LAZY)) {
-            T entity = jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
-            return lazyLoadingManager.setLazyLoading(entity);
+            return getLazyLoading(sql, clazz);
         }
 
         return jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
+    }
+
+    private <T> T getLazyLoading(final String sql, final Class<T> clazz) {
+        T entity = jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
+        return lazyLoadingManager.setLazyLoading(entity);
     }
 
     private <T> T eagerTypeSql(final EntityMappingTable entityMappingTable,
