@@ -28,7 +28,7 @@ public class LazyLoadingManager {
 
         fetchTypeDomainType
                 .forEach(domainType -> {
-                    Class<?> subEntityType = collectionClass(domainType.getField());
+                    Class<?> subEntityType = getCollectionClass(domainType.getField());
                     Object lazyProxy = Enhancer.create(
                             List.class,
                             new LazyLoadingProxy(
@@ -51,7 +51,7 @@ public class LazyLoadingManager {
         }
     }
 
-    private Class<?> collectionClass(Field field) {
+    private Class<?> getCollectionClass(Field field) {
         Type type = field.getGenericType();
 
         if (type instanceof ParameterizedType) {
