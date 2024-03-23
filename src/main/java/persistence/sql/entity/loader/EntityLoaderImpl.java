@@ -9,7 +9,6 @@ import persistence.sql.dml.query.builder.SelectQueryBuilder;
 import persistence.sql.dml.query.clause.ColumnClause;
 import persistence.sql.dml.query.clause.WhereClause;
 import persistence.sql.entity.EntityMappingTable;
-import persistence.sql.entity.collection.LazyLoadingManager;
 import persistence.sql.entity.model.PrimaryDomainType;
 
 import java.util.Collections;
@@ -21,18 +20,15 @@ public class EntityLoaderImpl implements EntityLoader {
     private final EntityLoaderMapper entityLoaderMapper;
     private final SelectQueryBuilder selectQueryBuilder;
     private final EagerSelectQueryBuilder eagerSelectQueryBuilder;
-    private final LazyLoadingManager lazyLoadingManager;
 
     public EntityLoaderImpl(final JdbcTemplate jdbcTemplate,
                             final EntityLoaderMapper entityLoaderMapper,
                             final SelectQueryBuilder selectQueryBuilder,
-                            final EagerSelectQueryBuilder eagerSelectQueryBuilder,
-                            final LazyLoadingManager lazyLoadingManager) {
+                            final EagerSelectQueryBuilder eagerSelectQueryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
         this.entityLoaderMapper = entityLoaderMapper;
         this.selectQueryBuilder = selectQueryBuilder;
         this.eagerSelectQueryBuilder = eagerSelectQueryBuilder;
-        this.lazyLoadingManager = lazyLoadingManager;
     }
 
     @Override
@@ -65,11 +61,6 @@ public class EntityLoaderImpl implements EntityLoader {
                 entityMappingTable.getTable(),
                 columnClause,
                 whereClause);
-
-        if (entityMappingTable.hasFetchType(FetchType.LAZY)) {
-            T entity = jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
-            return lazyLoadingManager.setLazyLoading(entity);
-        }
 
         return jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
     }
