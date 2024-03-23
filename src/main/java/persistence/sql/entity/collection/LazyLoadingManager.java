@@ -1,5 +1,6 @@
 package persistence.sql.entity.collection;
 
+import jakarta.persistence.FetchType;
 import net.sf.cglib.proxy.Enhancer;
 import persistence.sql.entity.EntityMappingTable;
 import persistence.sql.entity.exception.InvalidProxyException;
@@ -13,16 +14,17 @@ import java.util.List;
 
 public class LazyLoadingManager {
 
-    private final CollectionPersister collectionPersister;
-    private final CollectionLoader collectionLoader;
-
-    public LazyLoadingManager(final CollectionPersister collectionPersister,
-                              final CollectionLoader collectionLoader) {
-        this.collectionPersister = collectionPersister;
-        this.collectionLoader = collectionLoader;
+    public LazyLoadingManager() {
     }
 
-    public <T> T setLazyLoading(final T entity) {
+    public boolean isLazyLoading(final Class<?> clazz) {
+        final EntityMappingTable entityMappingTable = EntityMappingTable.from(clazz);
+        return entityMappingTable.hasFetchType(FetchType.LAZY);
+    }
+
+    public <T> T setLazyLoading(final T entity,
+                                final CollectionPersister collectionPersister,
+                                final CollectionLoader collectionLoader) {
         final EntityMappingTable entityMappingTable = EntityMappingTable.of(entity.getClass(), entity);
         List<DomainType> lazyLoadingDomainTypes = entityMappingTable.getDomainTypeWithLazyLoading();
 
