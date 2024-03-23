@@ -57,7 +57,7 @@ public class EntityLoaderImpl implements EntityLoader {
         final Criteria criteria = Criteria.ofCriteria(Collections.singletonList(Criterion.of(primaryDomainType.getColumnName(), id.toString())));
         final WhereClause whereClause = new WhereClause(criteria);
 
-        if (entityMappingTable.isFetchType(FetchType.EAGER)) {
+        if (entityMappingTable.hasFetchType(FetchType.EAGER)) {
             return eagerTypeSql(entityMappingTable, primaryDomainType, id, clazz);
         }
 
@@ -66,7 +66,7 @@ public class EntityLoaderImpl implements EntityLoader {
                 columnClause,
                 whereClause);
 
-        if (entityMappingTable.isFetchType(FetchType.LAZY)) {
+        if (entityMappingTable.hasFetchType(FetchType.LAZY)) {
             T entity = jdbcTemplate.queryForObject(sql, resultSet -> entityLoaderMapper.mapper(clazz, resultSet));
             return lazyLoadingManager.setLazyLoading(entity);
         }
