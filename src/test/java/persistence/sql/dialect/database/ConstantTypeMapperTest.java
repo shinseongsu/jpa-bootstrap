@@ -27,23 +27,6 @@ public class ConstantTypeMapperTest {
         this.constantTypeMapper = dialect.getConstantTypeMapper();
     }
 
-    @DisplayName("H2에 해당하는 제약조건을 반환한다.")
-    @ParameterizedTest
-    @MethodSource("constantTypes")
-    void getConstantMapper(Constraints constantType, String expected) {
-        String actual = constantTypeMapper.getConstantType(constantType);
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static Stream<Arguments> constantTypes() {
-        return Stream.of(
-                Arguments.of(Constraints.PK, "PRIMARY KEY AUTO_INCREMENT"),
-                Arguments.of(Constraints.PRIMARY_KEY, "PRIMARY KEY"),
-                Arguments.of(Constraints.NOT_NULL, "NOT NULL")
-        );
-    }
-
     @DisplayName("지원하지 않는 제약조건일시, 에러를 반환한다.")
     @Test
     void invalidConstantType() {

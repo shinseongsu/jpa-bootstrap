@@ -88,13 +88,13 @@ public class EntityMappingTable {
                 .orElseThrow(NotFoundIdException::new);
     }
 
-    public boolean isFetchType(final FetchType fetchType) {
+    public boolean hasFetchType(final FetchType fetchType) {
         return domainTypes.getDomainTypes()
                 .stream()
                 .anyMatch(domainType -> domainType.getFetchType() == fetchType);
     }
 
-    public List<DomainType> getFetchType() {
+    public List<DomainType> getDomainTypeWithLazyLoading() {
         return domainTypes.getDomainTypes()
                 .stream()
                 .filter(domainType -> domainType.getFetchType() == FetchType.LAZY)

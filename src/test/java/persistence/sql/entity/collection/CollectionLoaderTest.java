@@ -14,13 +14,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CollectionLoaderTest extends H2Database {
 
     private OrderItem orderItem;
+    private CollectionLoader collectionLoader;
+
 
     @BeforeEach
     void setUp() {
         this.orderItem = new OrderItem(1L, "만들면서 배우는 JPA", 1);
 
-        entityPersister.delete(orderItem);
-        entityPersister.insert(orderItem);
+        this.collectionLoader = inFlightMetadataCollector.getMetaModel().getCollectionLoader(OrderItem.class);
+
+        entityManager.removeAll(OrderItem.class);
+        entityManager.persist(orderItem);
     }
 
     @DisplayName("subEntity를 조회한다.")

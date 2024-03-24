@@ -1,5 +1,6 @@
 package persistence.sql.entity.collection;
 
+import jakarta.persistence.FetchType;
 import net.sf.cglib.proxy.Enhancer;
 import persistence.sql.entity.EntityMappingTable;
 import persistence.sql.entity.exception.InvalidProxyException;
@@ -13,22 +14,23 @@ import java.util.List;
 
 public class LazyLoadingManager {
 
-    private final CollectionPersister collectionPersister;
-    private final CollectionLoader collectionLoader;
-
-    public LazyLoadingManager(final CollectionPersister collectionPersister,
-                              final CollectionLoader collectionLoader) {
-        this.collectionPersister = collectionPersister;
-        this.collectionLoader = collectionLoader;
+    public LazyLoadingManager() {
     }
 
-    public <T> T setLazyLoading(final T entity) {
-        final EntityMappingTable entityMappingTable = EntityMappingTable.of(entity.getClass(), entity);
-        List<DomainType> fetchTypeDomainType = entityMappingTable.getFetchType();
+    public boolean isLazyLoading(final Class<?> clazz) {
+        final EntityMappingTable entityMappingTable = EntityMappingTable.from(clazz);
+        return entityMappingTable.hasFetchType(FetchType.LAZY);
+    }
 
-        fetchTypeDomainType
+    public <T> T setLazyLoading(final T entity,
+                                final CollectionPersister collectionPersister,
+                                final CollectionLoader collectionLoader) {
+        final EntityMappingTable entityMappingTable = EntityMappingTable.of(entity.getClass(), entity);
+        List<DomainType> lazyLoadingDomainTypes = entityMappingTable.getDomainTypeWithLazyLoading();
+
+        lazyLoadingDomainTypes
                 .forEach(domainType -> {
-                    Class<?> subEntityType = collectionClass(domainType.getField());
+                    Class<?> subEntityType = getCollectionClass(domainType.getField());
                     Object lazyProxy = Enhancer.create(
                             List.class,
                             new LazyLoadingProxy(
@@ -51,7 +53,7 @@ public class LazyLoadingManager {
         }
     }
 
-    private Class<?> collectionClass(Field field) {
+    private Class<?> getCollectionClass(Field field) {
         Type type = field.getGenericType();
 
         if (type instanceof ParameterizedType) {

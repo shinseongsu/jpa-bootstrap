@@ -1,5 +1,8 @@
 package persistence.sql.entity.manager;
 
+import domain.LazyOrder;
+import domain.Order;
+import domain.OrderItem;
 import domain.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,18 +11,38 @@ import persistence.sql.db.H2Database;
 import persistence.sql.entity.exception.ReadOnlyException;
 import persistence.sql.entity.exception.RemoveEntityException;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class EntityMangerTest extends H2Database {
 
     private Person person;
 
+    private Order insertOrder;
+    private OrderItem jpaOrderItem;
+    private LazyOrder lazyOrder;
+
     @BeforeEach
     void setUp() {
         this.person = new Person(1L, "박재성", 10, "jason");
 
+        this.jpaOrderItem = new OrderItem(1L, "만들면서 배우는 JPA", 1);
+        this.insertOrder = new Order(1L, "nextstep jpa 강의", List.of(jpaOrderItem));
+        this.lazyOrder = new LazyOrder(1L, "만드면서 배우는 Spring", List.of(jpaOrderItem));
+
         entityManager.removeAll(Person.class);
+        entityManager.removeAll(Order.class);
+        entityManager.removeAll(LazyOrder.class);
+        entityManager.removeAll(OrderItem.class);
+
+        entityManager.persist(jpaOrderItem);
+        entityManager.persist(insertOrder);
+        entityManager.persist(lazyOrder);
+
+
         entityManager.persist(person);
     }
 
@@ -100,4 +123,19 @@ class EntityMangerTest extends H2Database {
                 .isInstanceOf(ReadOnlyException.class)
                 .hasMessage("읽기전용은 수정 및 삭제가 불가능 합니다.");
     }
+
+    @DisplayName("LazyLoading이 동작을 하는지 테스트한다.")
+    @Test
+    void lazyLoadingTest() {
+        LazyOrder order = entityManager.find(LazyOrder.class, lazyOrder.getId());
+
+        assertAll(
+                () -> assertThat(order.getId()).isEqualTo(lazyOrder.getId()),
+                () -> assertThat(order.getOrderNumber()).isEqualTo(lazyOrder.getOrderNumber())
+        );
+
+        assertThat(order).isEqualTo(lazyOrder);
+        assertThat(order.getOrderItems()).containsExactly(jpaOrderItem);
+    }
+
 }

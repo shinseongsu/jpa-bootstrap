@@ -8,21 +8,15 @@ import domain.OrderItem;
 import domain.Person;
 import jdbc.JdbcTemplate;
 import org.junit.jupiter.api.BeforeAll;
+import persistence.metadata.InFlightMetadataCollector;
 import persistence.sql.ddl.query.builder.CreateQueryBuilder;
 import persistence.sql.ddl.query.builder.DropQueryBuilder;
 import persistence.sql.dialect.Dialect;
 import persistence.sql.dialect.DialectResolutionInfo;
 import persistence.sql.dialect.database.Database;
-import persistence.sql.dml.query.builder.*;
 import persistence.sql.entity.EntityMappingTable;
-import persistence.sql.entity.collection.*;
-import persistence.sql.entity.loader.EntityLoader;
-import persistence.sql.entity.loader.EntityLoaderImpl;
-import persistence.sql.entity.loader.EntityLoaderMapper;
 import persistence.sql.entity.manager.EntityManager;
 import persistence.sql.entity.manager.EntityManagerImpl;
-import persistence.sql.entity.persister.EntityPersister;
-import persistence.sql.entity.persister.EntityPersisterImpl;
 
 import java.sql.SQLException;
 
@@ -36,19 +30,7 @@ public abstract class H2Database {
 
     protected static JdbcTemplate jdbcTemplate;
 
-    protected static SelectQueryBuilder selectQueryBuilder;
-    protected static EagerSelectQueryBuilder eagerSelectQueryBuilder;
-    protected static InsertQueryBuilder insertQueryBuilder;
-    protected static UpdateQueryBuilder updateQueryBuilder;
-    protected static DeleteQueryBuilder deleteQueryBuilder;
-
-
-    protected static EntityLoaderMapper entityLoaderMapper;
-    protected static EntityLoader entityLoader;
-    protected static EntityPersister entityPersister;
-    protected static CollectionPersister collectionPersister;
-    protected static CollectionLoader collectionLoader;
-    protected static LazyLoadingManager lazyLoadingManager;
+    protected static InFlightMetadataCollector inFlightMetadataCollector;
 
     protected static EntityManager entityManager;
 
@@ -56,34 +38,9 @@ public abstract class H2Database {
     static void setUpAll() throws SQLException {
         server = new H2();
         jdbcTemplate = new JdbcTemplate(server.getConnection());
-        collectionPersister = new CollectionPersisterImpl();
 
-        selectQueryBuilder = SelectQueryBuilder.getInstance();
-        eagerSelectQueryBuilder = EagerSelectQueryBuilder.getInstance();
-        insertQueryBuilder = InsertQueryBuilder.getInstance();
-        updateQueryBuilder = UpdateQueryBuilder.getInstance();
-        deleteQueryBuilder = DeleteQueryBuilder.getInstance();
-        entityLoaderMapper = EntityLoaderMapper.getInstance();
-
-        entityPersister = new EntityPersisterImpl(
-                jdbcTemplate,
-                insertQueryBuilder,
-                updateQueryBuilder,
-                deleteQueryBuilder);
-        collectionLoader = new CollectionLoaderImpl(
-                entityLoaderMapper,
-                selectQueryBuilder,
-                jdbcTemplate
-        );
-        lazyLoadingManager = new LazyLoadingManager(collectionPersister, collectionLoader);
-        entityLoader = new EntityLoaderImpl(
-                jdbcTemplate,
-                entityLoaderMapper,
-                selectQueryBuilder,
-                eagerSelectQueryBuilder,
-                lazyLoadingManager);
-
-        entityManager = new EntityManagerImpl(entityLoader, entityPersister);
+        inFlightMetadataCollector = new InFlightMetadataCollector("domain", jdbcTemplate);
+        entityManager = new EntityManagerImpl(inFlightMetadataCollector.getMetaModel());
 
         createTable();
     }
