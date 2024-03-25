@@ -22,6 +22,8 @@ import java.sql.SQLException;
 
 public abstract class H2Database {
 
+    private static final String BASE_PACKAGE = "domain";
+
     protected static EntityMappingTable entityMappingTable;
     protected static EntityMappingTable eagerEntityMappingTable;
     protected static EntityMappingTable lazyEntityMappingTable;
@@ -39,7 +41,7 @@ public abstract class H2Database {
         server = new H2();
         jdbcTemplate = new JdbcTemplate(server.getConnection());
 
-        inFlightMetadataCollector = new InFlightMetadataCollector("domain", jdbcTemplate);
+        inFlightMetadataCollector = new InFlightMetadataCollector(BASE_PACKAGE, jdbcTemplate);
         entityManager = new EntityManagerImpl(inFlightMetadataCollector.getMetaModel());
 
         createTable();
