@@ -3,9 +3,7 @@ package persistence.metadata;
 import jdbc.JdbcTemplate;
 import persistence.sql.entity.collection.CollectionLoader;
 import persistence.sql.entity.collection.CollectionLoaderImpl;
-import persistence.sql.entity.loader.EntityLoader;
-import persistence.sql.entity.loader.EntityLoaderImpl;
-import persistence.sql.entity.loader.EntityLoaderMapper;
+import persistence.sql.entity.loader.*;
 import persistence.sql.entity.persister.EntityPersister;
 import persistence.sql.entity.persister.EntityPersisterImpl;
 
@@ -14,9 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MetaModelImpl implements MetaModel {
 
-    private Map<Class<?>, EntityPersister> entityPersisterMetaes = new ConcurrentHashMap<>();
-    private Map<Class<?>, EntityLoader> entityLoaderMetas = new ConcurrentHashMap<>();
-    private Map<Class<?>, CollectionLoader> collectionMetas = new ConcurrentHashMap<>();
+    private final Map<Class<?>, EntityPersister> entityPersisterMetaes = new ConcurrentHashMap<>();
+    private final Map<Class<?>, EntityLoader> entityLoaderMetas = new ConcurrentHashMap<>();
+    private final Map<Class<?>, CollectionLoader> collectionMetas = new ConcurrentHashMap<>();
+    private final Map<Class<?>, EntityEagerLoader> entityEagerLoaderMetas = new ConcurrentHashMap<>();
 
     public MetaModelImpl(final String basePackage,
                          final JdbcTemplate jdbcTemplate,
@@ -45,6 +44,12 @@ public class MetaModelImpl implements MetaModel {
                             queryMeta.getSelectQueryBuilder(),
                             jdbcTemplate
                     ));
+
+                    entityEagerLoaderMetas.put(clazz, new EntityEagerLoaderImpl(
+                            jdbcTemplate,
+                            entityLoaderMapper,
+                            queryMeta.getEagerSelectQueryBuilder()
+                    ));
                 });
     }
 
@@ -61,5 +66,10 @@ public class MetaModelImpl implements MetaModel {
     @Override
     public CollectionLoader getCollectionLoader(Class<?> clazz) {
         return collectionMetas.get(clazz);
+    }
+
+    @Override
+    public EntityEagerLoader getEntityEagerLoader(Class<?> clazz) {
+        return entityEagerLoaderMetas.get(clazz);
     }
 }
