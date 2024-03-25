@@ -8,5 +8,5 @@
 
 # 2단계 요구사항
 
-- [ ] EntityManagerFactory 를 만들어 보기
-- [ ] EntityManagerFactory 를 적용하여 리팩터링을 해보자
+- [x] EntityManagerFactory 를 만들어 보기
+- [x] EntityManagerFactory 를 적용하여 리팩터링을 해보자
