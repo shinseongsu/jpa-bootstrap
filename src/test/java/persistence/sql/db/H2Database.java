@@ -9,6 +9,8 @@ import domain.Person;
 import jdbc.JdbcTemplate;
 import org.junit.jupiter.api.BeforeAll;
 import persistence.metadata.InFlightMetadataCollector;
+import persistence.session.EntityManagerFactory;
+import persistence.session.EntityManagerFactoryImpl;
 import persistence.sql.ddl.query.builder.CreateQueryBuilder;
 import persistence.sql.ddl.query.builder.DropQueryBuilder;
 import persistence.sql.dialect.Dialect;
@@ -16,7 +18,6 @@ import persistence.sql.dialect.DialectResolutionInfo;
 import persistence.sql.dialect.database.Database;
 import persistence.sql.entity.EntityMappingTable;
 import persistence.sql.entity.manager.EntityManager;
-import persistence.sql.entity.manager.EntityManagerImpl;
 
 import java.sql.SQLException;
 
@@ -33,6 +34,7 @@ public abstract class H2Database {
     protected static JdbcTemplate jdbcTemplate;
 
     protected static InFlightMetadataCollector inFlightMetadataCollector;
+    protected static EntityManagerFactory entityManagerFactory;
 
     protected static EntityManager entityManager;
 
@@ -42,7 +44,10 @@ public abstract class H2Database {
         jdbcTemplate = new JdbcTemplate(server.getConnection());
 
         inFlightMetadataCollector = new InFlightMetadataCollector(BASE_PACKAGE, jdbcTemplate);
-        entityManager = new EntityManagerImpl(inFlightMetadataCollector.getMetaModel());
+        entityManagerFactory = new EntityManagerFactoryImpl(server.getConnection(), inFlightMetadataCollector.getMetaModel());
+        entityManagerFactory.create();
+
+        entityManager = entityManagerFactory.openSession();
 
         createTable();
     }
