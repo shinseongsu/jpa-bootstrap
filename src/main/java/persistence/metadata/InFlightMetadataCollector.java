@@ -1,6 +1,7 @@
 package persistence.metadata;
 
 import jdbc.JdbcTemplate;
+import persistence.sql.dml.query.builder.SelectQueryBuilder;
 
 public class InFlightMetadataCollector {
 
@@ -19,5 +20,9 @@ public class InFlightMetadataCollector {
 
     public QueryMeta getQueryMeta() {
         return queryMeta;
+    }
+
+    public SelectQueryBuilder getSelectQueryBuilder() {
+        return queryMeta.getSelectQueryBuilder();
     }
 }

@@ -11,6 +11,8 @@ import persistence.sql.entity.context.PersistenceContext;
 import persistence.sql.entity.context.PersistenceContextImpl;
 import persistence.sql.entity.exception.ReadOnlyException;
 import persistence.sql.entity.exception.RemoveEntityException;
+import persistence.sql.entity.loader.EntityEagerLoader;
+import persistence.sql.entity.loader.EntityLoader;
 import persistence.sql.entity.model.DomainType;
 
 import java.lang.reflect.Field;
@@ -48,7 +50,7 @@ public class EntityManagerImpl implements EntityManager {
             return persistenceEntity;
         }
 
-        T entity = metaModel.getEntityLoader(clazz).find(clazz, id);
+        T entity = getEntityLoader(clazz,id);
         if(lazyLoadingManager.isLazyLoading(clazz)) {
             entity = lazyLoadingManager.setLazyLoading(entity, collectionPersister, metaModel.getCollectionLoader(clazz));
         }
@@ -58,6 +60,17 @@ public class EntityManagerImpl implements EntityManager {
             persistenceContext.loading(entity, id);
         }
         return entity;
+    }
+
+    private <T> T getEntityLoader(final Class<T> clazz, final Object id) {
+        EntityEagerLoader entityEagerLoader = metaModel.getEntityEagerLoader(clazz);
+        EntityLoader entityLoader = metaModel.getEntityLoader(clazz);
+
+        if(entityEagerLoader.isEagerFetchType(clazz)) {
+            return entityEagerLoader.find(clazz, id);
+        }
+
+        return entityLoader.find(clazz, id);
     }
 
     @Override

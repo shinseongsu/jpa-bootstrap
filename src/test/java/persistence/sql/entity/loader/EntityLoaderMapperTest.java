@@ -35,7 +35,7 @@ class EntityLoaderMapperTest extends H2Database {
         this.person1 = new Person(1L, "박재성", 10, "jason");
         this.connection = server.getConnection();
 
-        this.selectQueryBuilder = inFlightMetadataCollector.getQueryMeta().getSelectQueryBuilder();
+        this.selectQueryBuilder = inFlightMetadataCollector.getSelectQueryBuilder();
         this.entityLoaderMapper = EntityLoaderMapper.getInstance();;
 
         personRepository.deleteAll();
@@ -62,7 +62,6 @@ class EntityLoaderMapperTest extends H2Database {
             resultSet.next();
             return entityLoaderMapper.mapper(Person.class, resultSet);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("SQL 에러가 발생하였습니다.");
         }
     }
