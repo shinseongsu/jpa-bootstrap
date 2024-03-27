@@ -1,5 +1,6 @@
 package persistence.sql.entity.manager;
 
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import persistence.metadata.MetaModel;
 import persistence.sql.dml.exception.FieldSetValueException;
@@ -66,7 +67,8 @@ public class EntityManagerImpl implements EntityManager {
         EntityEagerLoader entityEagerLoader = metaModel.getEntityEagerLoader(clazz);
         EntityLoader entityLoader = metaModel.getEntityLoader(clazz);
 
-        if(entityEagerLoader.isEagerFetchType(clazz)) {
+        final EntityMappingTable entityMappingTable = EntityMappingTable.from(clazz);
+        if(entityMappingTable.hasFetchType(FetchType.EAGER)) {
             return entityEagerLoader.find(clazz, id);
         }
 

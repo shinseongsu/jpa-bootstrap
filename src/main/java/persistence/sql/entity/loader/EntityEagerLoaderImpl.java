@@ -26,12 +26,6 @@ public class EntityEagerLoaderImpl implements EntityEagerLoader {
     }
 
     @Override
-    public boolean isEagerFetchType(final Class<?> clazz) {
-        final EntityMappingTable entityMappingTable = EntityMappingTable.from(clazz);
-        return entityMappingTable.hasFetchType(FetchType.EAGER);
-    }
-
-    @Override
     public <T> T find(final Class<T> clazz, final Object id) {
         final EntityMappingTable entityMappingTable = EntityMappingTable.from(clazz);
         final PrimaryDomainType primaryDomainType = entityMappingTable.getPkDomainTypes();
