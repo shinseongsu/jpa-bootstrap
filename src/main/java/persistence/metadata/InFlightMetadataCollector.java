@@ -18,10 +18,6 @@ public class InFlightMetadataCollector {
         return metaModel;
     }
 
-    public QueryMeta getQueryMeta() {
-        return queryMeta;
-    }
-
     public SelectQueryBuilder getSelectQueryBuilder() {
         return queryMeta.getSelectQueryBuilder();
     }
