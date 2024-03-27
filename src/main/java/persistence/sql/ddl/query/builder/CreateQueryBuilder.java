@@ -1,5 +1,6 @@
 package persistence.sql.ddl.query.builder;
 
+import persistence.sql.dialect.Dialect;
 import persistence.sql.dialect.database.ConstraintsMapper;
 import persistence.sql.dialect.database.TypeMapper;
 import persistence.sql.entity.EntityMappingTable;
@@ -29,12 +30,11 @@ public class CreateQueryBuilder {
     }
 
     public static CreateQueryBuilder of(final EntityMappingTable entityMappingTable,
-                                        final TypeMapper typeMapper,
-                                        final ConstraintsMapper constantTypeMapper) {
+                                        final Dialect dialect) {
         List<ColumnBuilder> columnBuilders = getColumnBuilders(
                 entityMappingTable.getDomainTypes(),
-                typeMapper,
-                constantTypeMapper);
+                dialect.getTypeMapper(),
+                dialect.getConstantTypeMapper());
         ForeignKeyBuilder foreignKeyBuilder = new ForeignKeyBuilder(entityMappingTable);
         return new CreateQueryBuilder(entityMappingTable.getTable(), columnBuilders, foreignKeyBuilder);
     }
