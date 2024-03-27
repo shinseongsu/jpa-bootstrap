@@ -56,19 +56,19 @@ public abstract class H2Database {
         DialectResolutionInfo dialectResolutionInfo = new DialectResolutionInfo(server.getConnection().getMetaData());
         Dialect dialect = Database.from(dialectResolutionInfo).getDialectSupplier().get();
         entityMappingTable = EntityMappingTable.from(Person.class);
-        CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(entityMappingTable, dialect.getTypeMapper(), dialect.getConstantTypeMapper());
+        CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(entityMappingTable, dialect);
         DropQueryBuilder dropQueryBuilder = new DropQueryBuilder(entityMappingTable);
 
         eagerEntityMappingTable = EntityMappingTable.from(Order.class);
-        CreateQueryBuilder eagerCreateBuilder = CreateQueryBuilder.of(eagerEntityMappingTable, dialect.getTypeMapper(), dialect.getConstantTypeMapper());
+        CreateQueryBuilder eagerCreateBuilder = CreateQueryBuilder.of(eagerEntityMappingTable, dialect);
         DropQueryBuilder eagerDropBuilder = new DropQueryBuilder(eagerEntityMappingTable);
 
         lazyEntityMappingTable = EntityMappingTable.from(LazyOrder.class);
-        CreateQueryBuilder lazyCreateBuilder = CreateQueryBuilder.of(lazyEntityMappingTable, dialect.getTypeMapper(), dialect.getConstantTypeMapper());
+        CreateQueryBuilder lazyCreateBuilder = CreateQueryBuilder.of(lazyEntityMappingTable, dialect);
         DropQueryBuilder lazyDropBuilder = new DropQueryBuilder(lazyEntityMappingTable);
 
         EntityMappingTable orderItemEntityMappingTable = EntityMappingTable.from(OrderItem.class);
-        CreateQueryBuilder orderItemCreateBuilder = CreateQueryBuilder.of(orderItemEntityMappingTable, dialect.getTypeMapper(), dialect.getConstantTypeMapper());
+        CreateQueryBuilder orderItemCreateBuilder = CreateQueryBuilder.of(orderItemEntityMappingTable, dialect);
         DropQueryBuilder orderItemDropBuilder = new DropQueryBuilder(orderItemEntityMappingTable);
 
         jdbcTemplate.execute(dropQueryBuilder.toSql());

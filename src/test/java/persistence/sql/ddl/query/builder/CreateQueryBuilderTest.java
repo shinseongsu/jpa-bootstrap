@@ -7,31 +7,30 @@ import domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import persistence.sql.dialect.database.ConstraintsMapper;
-import persistence.sql.dialect.database.TypeMapper;
-import persistence.sql.dialect.h2.H2ConstraintsMapper;
-import persistence.sql.dialect.h2.H2TypeMapper;
+import persistence.sql.db.H2Database;
+import persistence.sql.dialect.Dialect;
+import persistence.sql.dialect.DialectResolutionInfo;
+import persistence.sql.dialect.database.Database;
 import persistence.sql.entity.EntityMappingTable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateQueryBuilderTest {
+class CreateQueryBuilderTest extends H2Database {
 
     private EntityMappingTable legacyPersonDomain;
     private EntityMappingTable personDomain;
     private EntityMappingTable userDomain;
 
-    private TypeMapper typeMapper;
-    private ConstraintsMapper constraints;
+    private Dialect dialect;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        DialectResolutionInfo dialectResolutionInfo = new DialectResolutionInfo(server.getConnection().getMetaData());
+        dialect = Database.from(dialectResolutionInfo).getDialectSupplier().get();
+
         this.legacyPersonDomain = EntityMappingTable.from(LegacyPerson.class);
         this.personDomain = EntityMappingTable.from(Person.class);
         this.userDomain = EntityMappingTable.from(User.class);
-
-        this.typeMapper = H2TypeMapper.newInstance();
-        this.constraints = H2ConstraintsMapper.newInstance();
     }
 
     @DisplayName("일반적인 Entity에서 테이블을 만드는 쿼리를 반환한다.")
@@ -39,8 +38,7 @@ class CreateQueryBuilderTest {
     void createQuery() {
         CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(
                 legacyPersonDomain,
-                typeMapper,
-                constraints
+                dialect
         );
 
         final String expected = "CREATE TABLE LegacyPerson(\n" +
@@ -57,8 +55,7 @@ class CreateQueryBuilderTest {
     void createColumnNameSql() {
         CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(
                 personDomain,
-                typeMapper,
-                constraints
+                dialect
         );
 
         final String expected = "CREATE TABLE Person(\n" +
@@ -76,8 +73,7 @@ class CreateQueryBuilderTest {
     void createTableNameSql() {
         CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(
                 userDomain,
-                typeMapper,
-                constraints
+                dialect
         );
 
         final String expected = "CREATE TABLE users(\n" +
@@ -97,8 +93,7 @@ class CreateQueryBuilderTest {
 
         CreateQueryBuilder createQueryBuilder = CreateQueryBuilder.of(
                 entityMappingTable,
-                typeMapper,
-                constraints
+                dialect
         );
 
         assertThat(createQueryBuilder.toSql()).isEqualTo("CREATE TABLE orders(\n" +

@@ -30,7 +30,7 @@ public class Application {
             Dialect dialect = entityManagerFactory.getDialect();
 
             final EntityMappingTable entityMappingTable = EntityMappingTable.from(LegacyPerson.class);
-            String createTableSql = CreateQueryBuilder.of(entityMappingTable, dialect.getTypeMapper(), dialect.getConstantTypeMapper()).toSql();
+            String createTableSql = CreateQueryBuilder.of(entityMappingTable, dialect).toSql();
             String dropTableSql = new DropQueryBuilder(entityMappingTable).toSql();
 
             logger.debug(createTableSql);
