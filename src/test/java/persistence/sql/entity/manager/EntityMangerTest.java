@@ -44,6 +44,8 @@ class EntityMangerTest extends H2Database {
 
 
         entityManager.persist(person);
+
+        entityManagerFactory.flush();
     }
 
     @DisplayName("디비를 조회하여, 한건의 결과를 반환한다.")
