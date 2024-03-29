@@ -1,5 +1,8 @@
 package persistence.session;
 
+import persistence.action.ActionQueue;
+import persistence.action.ActionQueueImpl;
+import persistence.event.EventListenerRegistry;
 import persistence.metadata.MetaModel;
 import persistence.session.exception.NotFoundEntityManagerException;
 import persistence.sql.dialect.Dialect;
@@ -16,10 +19,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     private final CurrentSessionContext currentSessionContext;
     private final MetaModel metaModel;
     private final Dialect dialect;
+    private final EventListenerRegistry eventListenerRegistry;
+    private final ActionQueue actionQueue;
 
     public EntityManagerFactoryImpl(final Connection connection,
                                     final MetaModel metaModel) {
         this.metaModel = metaModel;
+        this.actionQueue = new ActionQueueImpl();
+        this.eventListenerRegistry = EventListenerRegistry.create(metaModel, actionQueue);
         this.currentSessionContext = new CurrentSessionContext();
         this.dialect = Database.from(getDialectResolutionInfo(connection)).getDialectSupplier().get();
     }
@@ -34,7 +41,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 
     @Override
     public void create() {
-        final EntityManager entityManager = new EntityManagerImpl(metaModel);
+        final EntityManager entityManager = new EntityManagerImpl(metaModel, eventListenerRegistry);
         currentSessionContext.create(entityManager);
     }
 
@@ -52,5 +59,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     @Override
     public Dialect getDialect() {
         return this.dialect;
+    }
+
+    @Override
+    public void flush() {
+        this.actionQueue.allExecute();
+    }
+
+    @Override
+    public ActionQueue getActionQueue() {
+        return this.actionQueue;
     }
 }

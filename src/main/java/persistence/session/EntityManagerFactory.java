@@ -1,5 +1,6 @@
 package persistence.session;
 
+import persistence.action.ActionQueue;
 import persistence.sql.dialect.Dialect;
 import persistence.sql.entity.manager.EntityManager;
 
@@ -12,4 +13,8 @@ public interface EntityManagerFactory {
     void closeSession();
 
     Dialect getDialect();
+
+    void flush();
+
+    ActionQueue getActionQueue();
 }
