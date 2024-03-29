@@ -80,5 +80,7 @@ public abstract class H2Database {
         jdbcTemplate.execute(orderItemCreateBuilder.toSql());
         jdbcTemplate.execute(eagerCreateBuilder.toSql());
         jdbcTemplate.execute(lazyCreateBuilder.toSql());
+
+        entityManagerFactory.flush();
     }
 }
