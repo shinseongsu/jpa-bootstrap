@@ -10,3 +10,8 @@
 
 - [x] EntityManagerFactory 를 만들어 보기
 - [x] EntityManagerFactory 를 적용하여 리팩터링을 해보자
+
+# 3단계 요구사항
+
+- [x] EventType 을 활용해 리팩터링 해보기
+- [x] ActionQueue 를 활용해 쓰기 지연 구현해보기
