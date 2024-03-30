@@ -46,6 +46,30 @@ public class ActionQueueImpl implements ActionQueue {
         executeDelete();
     }
 
+    @Override
+    public InsertEntityAction<?> getInsertEntityAction() {
+        if(insertEntityActionQueue.isEmpty()) {
+            return null;
+        }
+        return insertEntityActionQueue.poll();
+    }
+
+    @Override
+    public UpdateEntityAction<?> getUpdateEntityAction() {
+        if(updateEntityActionQueue.isEmpty()) {
+            return null;
+        }
+        return updateEntityActionQueue.poll();
+    }
+
+    @Override
+    public DeleteEntityAction<?> getDeleteEntityAction() {
+        if(deleteEntityActionQueue.isEmpty()) {
+            return null;
+        }
+        return deleteEntityActionQueue.poll();
+    }
+
     private Object executeInsert() {
         Object key = null;
         while(!insertEntityActionQueue.isEmpty()) {
