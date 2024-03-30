@@ -10,7 +10,11 @@ public interface ActionQueue {
 
     void addDeleteAction(DeleteEntityAction<?> deleteEntityAction);
 
-    void allExecute();
+    void executeInsertAction();
+
+    void executeUpdateAction();
+
+    void executeDeleteAction();
 
     InsertEntityAction<?> pollInsertEntityAction();
 

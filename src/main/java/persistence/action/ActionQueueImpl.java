@@ -40,9 +40,17 @@ public class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public void allExecute() {
+    public void executeInsertAction() {
         executeInsert();
-        executeUdpate();
+    }
+
+    @Override
+    public void executeUpdateAction() {
+        executeUpdate();
+    }
+
+    @Override
+    public void executeDeleteAction() {
         executeDelete();
     }
 
@@ -78,7 +86,7 @@ public class ActionQueueImpl implements ActionQueue {
         return key;
     }
 
-    private void executeUdpate() {
+    private void executeUpdate() {
         while(!updateEntityActionQueue.isEmpty()) {
             updateEntityActionQueue.poll().execute();
         }
