@@ -25,7 +25,7 @@ class ActionQueueTest extends H2Database {
         metaModel = inFlightMetadataCollector.getMetaModel();
         actionQueue = entityManagerFactory.getActionQueue();
 
-        actionQueue.allExecute();
+        entityManager.flush();
         entityManager.removeAll(Person.class);
 
         actionQueue = entityManagerFactory.getActionQueue();
@@ -71,7 +71,7 @@ class ActionQueueTest extends H2Database {
     @Test
     void addUpdateActionTest() {
         entityManager.persist(existIdPerson);
-        actionQueue.allExecute();
+        entityManager.flush();
 
         final Person person = new Person(existIdPerson.getId(),
                 "배민",
@@ -95,7 +95,7 @@ class ActionQueueTest extends H2Database {
     @Test
     void deleteActionTest() {
         entityManager.persist(existIdPerson);
-        actionQueue.allExecute();
+        entityManager.flush();
 
         final Person person = new Person(existIdPerson.getId(),
                 "배민",
