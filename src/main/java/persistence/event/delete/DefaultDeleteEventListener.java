@@ -23,4 +23,9 @@ public class DefaultDeleteEventListener implements DeleteEventListener {
                         event.getEntity())
         );
     }
+
+    @Override
+    public void execute() {
+        actionQueue.executeDeleteAction();
+    }
 }

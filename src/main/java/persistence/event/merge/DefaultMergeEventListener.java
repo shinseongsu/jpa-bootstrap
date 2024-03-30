@@ -23,4 +23,9 @@ public class DefaultMergeEventListener implements MergeEventListener {
                         event.getEntity())
         );
     }
+
+    @Override
+    public void execute() {
+        actionQueue.executeUpdateAction();
+    }
 }

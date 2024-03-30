@@ -42,4 +42,9 @@ public class DefaultPersisterEventListener implements PersisterEventListener {
                         false)
         );
     }
+
+    @Override
+    public void execute() {
+        actionQueue.executeInsertAction();
+    }
 }
