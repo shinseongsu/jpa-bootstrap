@@ -62,11 +62,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     }
 
     @Override
-    public void flush() {
-        this.actionQueue.allExecute();
-    }
-
-    @Override
     public ActionQueue getActionQueue() {
         return this.actionQueue;
     }

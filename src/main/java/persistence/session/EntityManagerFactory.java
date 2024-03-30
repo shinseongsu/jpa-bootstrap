@@ -14,7 +14,5 @@ public interface EntityManagerFactory {
 
     Dialect getDialect();
 
-    void flush();
-
     ActionQueue getActionQueue();
 }
