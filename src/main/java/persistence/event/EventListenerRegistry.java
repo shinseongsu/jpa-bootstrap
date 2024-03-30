@@ -53,4 +53,10 @@ public class EventListenerRegistry {
     public PersisterEventListener getPersisterEventListener() {
         return persisterEventListener;
     }
+
+    public void flush() {
+        persisterEventListener.execute();
+        mergeEventListener.execute();
+        deleteEventListener.execute();
+    }
 }
