@@ -42,7 +42,7 @@ class ActionQueueTest extends H2Database {
         actionQueue.addInsertAction(personInsertEntityAction);
 
         Person person = entityManager.find(Person.class, existIdPerson.getId());
-        InsertEntityAction<?> insertEntityAction = actionQueue.getInsertEntityAction();
+        InsertEntityAction<?> insertEntityAction = actionQueue.pollInsertEntityAction();
         assertThat(person).isNull();
 
         assertThat(insertEntityAction).isEqualTo(new InsertEntityAction<>(metaModel.getEntityPersister(Person.class),
@@ -61,7 +61,7 @@ class ActionQueueTest extends H2Database {
 
         Person person = entityManager.find(Person.class, naverKey);
         Person newNaverPerson = new Person((Long) naverKey, "naver", 11, "@naver.com");
-        InsertEntityAction<?> insertEntityAction = actionQueue.getInsertEntityAction();
+        InsertEntityAction<?> insertEntityAction = actionQueue.pollInsertEntityAction();
 
         assertThat(person).isEqualTo(newNaverPerson);
         assertThat(insertEntityAction).isNull();
@@ -84,7 +84,7 @@ class ActionQueueTest extends H2Database {
         actionQueue.addUpdateAction(updateEntityAction);
 
         Person newPerson = entityManager.find(Person.class, existIdPerson.getId());
-        UpdateEntityAction<?> updateEntityAction1 = actionQueue.getUpdateEntityAction();
+        UpdateEntityAction<?> updateEntityAction1 = actionQueue.pollUpdateEntityAction();
 
         assertThat(newPerson).isEqualTo(existIdPerson);
         assertThat(updateEntityAction1).isEqualTo(new UpdateEntityAction<>(metaModel.getEntityPersister(Person.class),
@@ -108,7 +108,7 @@ class ActionQueueTest extends H2Database {
         actionQueue.addDeleteAction(deleteEntityAction);
 
         Person newPerson = entityManager.find(Person.class, existIdPerson.getId());
-        DeleteEntityAction<?> deleteEntityAction1 = actionQueue.getDeleteEntityAction();
+        DeleteEntityAction<?> deleteEntityAction1 = actionQueue.pollDeleteEntityAction();
 
         assertThat(newPerson).isEqualTo(existIdPerson);
         assertThat(deleteEntityAction1).isEqualTo(new DeleteEntityAction<>(metaModel.getEntityPersister(Person.class),

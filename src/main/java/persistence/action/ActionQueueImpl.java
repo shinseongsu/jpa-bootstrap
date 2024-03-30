@@ -47,7 +47,7 @@ public class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public InsertEntityAction<?> getInsertEntityAction() {
+    public InsertEntityAction<?> pollInsertEntityAction() {
         if(insertEntityActionQueue.isEmpty()) {
             return null;
         }
@@ -55,7 +55,7 @@ public class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public UpdateEntityAction<?> getUpdateEntityAction() {
+    public UpdateEntityAction<?> pollUpdateEntityAction() {
         if(updateEntityActionQueue.isEmpty()) {
             return null;
         }
@@ -63,7 +63,7 @@ public class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public DeleteEntityAction<?> getDeleteEntityAction() {
+    public DeleteEntityAction<?> pollDeleteEntityAction() {
         if(deleteEntityActionQueue.isEmpty()) {
             return null;
         }

@@ -12,9 +12,9 @@ public interface ActionQueue {
 
     void allExecute();
 
-    InsertEntityAction<?> getInsertEntityAction();
+    InsertEntityAction<?> pollInsertEntityAction();
 
-    UpdateEntityAction<?> getUpdateEntityAction();
+    UpdateEntityAction<?> pollUpdateEntityAction();
 
-    DeleteEntityAction<?> getDeleteEntityAction();
+    DeleteEntityAction<?> pollDeleteEntityAction();
 }

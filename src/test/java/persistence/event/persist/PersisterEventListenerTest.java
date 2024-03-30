@@ -46,7 +46,7 @@ class PersisterEventListenerTest extends H2Database {
         persisterEventListener.onPersister(kakoPersistEvent);
 
         Person person = entityManager.find(Person.class, existIdPerson.getId());
-        InsertEntityAction<?> insertEntityAction = actionQueue.getInsertEntityAction();
+        InsertEntityAction<?> insertEntityAction = actionQueue.pollInsertEntityAction();
 
         assertThat(person).isNull();
 
@@ -65,7 +65,7 @@ class PersisterEventListenerTest extends H2Database {
         Person newPerson = new Person((Long) key, "naver", 11, "@naver.com");
         assertThat(person).isEqualTo(newPerson);
 
-        assertThat(actionQueue.getInsertEntityAction()).isNull();
+        assertThat(actionQueue.pollInsertEntityAction()).isNull();
     }
 
 }
