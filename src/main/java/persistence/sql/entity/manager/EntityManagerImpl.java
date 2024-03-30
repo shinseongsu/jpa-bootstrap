@@ -103,6 +103,11 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
+    public void flush() {
+        eventListenerRegistry.flush();
+    }
+
+    @Override
     public void persist(final Object entity) {
         if (persistenceContext.isReadOnly(entity)) {
             throw new ReadOnlyException();

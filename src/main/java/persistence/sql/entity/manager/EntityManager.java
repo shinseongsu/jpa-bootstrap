@@ -10,6 +10,8 @@ public interface EntityManager {
 
     <T> T findOfReadOnly(Class<T> clazz, Object id);
 
+    void flush();
+
     void persist(Object entity);
 
     void remove(Object entity);
