@@ -4,6 +4,8 @@ import persistence.sql.entity.EntityMappingTable;
 import persistence.sql.entity.model.PrimaryDomainType;
 import persistence.sql.entity.persister.EntityPersister;
 
+import java.util.Objects;
+
 public class InsertEntityAction<T> implements EntityAction {
 
     private final EntityPersister entityPersister;
@@ -29,5 +31,18 @@ public class InsertEntityAction<T> implements EntityAction {
         EntityMappingTable entityMappingTable  = EntityMappingTable.of(entity.getClass(), entity);
         PrimaryDomainType pkDomainTypes = entityMappingTable.getPkDomainTypes();
         return Long.valueOf(pkDomainTypes.getValue());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InsertEntityAction<?> that = (InsertEntityAction<?>) o;
+        return isPrimaryValue == that.isPrimaryValue && Objects.equals(entityPersister, that.entityPersister) && Objects.equals(entity, that.entity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entityPersister, entity, isPrimaryValue);
     }
 }
