@@ -23,13 +23,10 @@ class ActionQueueTest extends H2Database {
         this.notExistIdPerson = new Person(null, "naver", 11, "@naver.com");
 
         metaModel = inFlightMetadataCollector.getMetaModel();
-        actionQueue = entityManagerFactory.getActionQueue();
+        actionQueue = entityManager.getActionQueue();
 
         entityManager.flush();
         entityManager.removeAll(Person.class);
-
-        actionQueue = entityManagerFactory.getActionQueue();
-        metaModel = inFlightMetadataCollector.getMetaModel();
     }
 
     @DisplayName("insertQueue 아이디값이 있을경우에는 Queue에 추가한다.")

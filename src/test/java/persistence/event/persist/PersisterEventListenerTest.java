@@ -31,13 +31,13 @@ class PersisterEventListenerTest extends H2Database {
 
         this.persisterEventListener = new DefaultPersisterEventListener(
                 inFlightMetadataCollector.getMetaModel(),
-                entityManagerFactory.getActionQueue()
+                entityManager.getActionQueue()
         );
 
         entityManager.removeAll(Person.class);
 
         metaModel = inFlightMetadataCollector.getMetaModel();
-        actionQueue = entityManagerFactory.getActionQueue();
+        actionQueue = entityManager.getActionQueue();
     }
 
     @DisplayName("ActionQueue에 insert 될것이 쌓인다.")

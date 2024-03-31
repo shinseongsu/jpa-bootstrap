@@ -2,6 +2,7 @@ package persistence.sql.entity.manager;
 
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import persistence.action.ActionQueue;
 import persistence.event.EventListenerRegistry;
 import persistence.event.delete.DeleteEvent;
 import persistence.event.load.LoadEvent;
@@ -31,7 +32,8 @@ public class EntityManagerImpl implements EntityManager {
     private final LazyLoadingManager lazyLoadingManager;
     private final CollectionPersister collectionPersister;
 
-    public EntityManagerImpl(final MetaModel metaModel, final EventListenerRegistry eventListenerRegistry) {
+    public EntityManagerImpl(final MetaModel metaModel,
+                             final EventListenerRegistry eventListenerRegistry) {
         this.metaModel = metaModel;
         this.eventListenerRegistry = eventListenerRegistry;
         this.collectionPersister = new CollectionPersisterImpl();
@@ -179,5 +181,10 @@ public class EntityManagerImpl implements EntityManager {
     public void removeAll(final Class<?> clazz) {
         metaModel.getEntityPersister(clazz).deleteAll(clazz);
         persistenceContext.removeAll();
+    }
+
+    @Override
+    public ActionQueue getActionQueue() {
+        return eventListenerRegistry.getActionQueue();
     }
 }

@@ -13,6 +13,4 @@ public interface EntityManagerFactory {
     void closeSession();
 
     Dialect getDialect();
-
-    ActionQueue getActionQueue();
 }

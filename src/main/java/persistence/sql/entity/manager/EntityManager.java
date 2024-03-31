@@ -1,5 +1,7 @@
 package persistence.sql.entity.manager;
 
+import persistence.action.ActionQueue;
+
 import java.util.List;
 
 public interface EntityManager {
@@ -17,4 +19,6 @@ public interface EntityManager {
     void remove(Object entity);
 
     void removeAll(Class<?> clazz);
+
+    ActionQueue getActionQueue();
 }
